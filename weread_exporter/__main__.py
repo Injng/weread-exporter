@@ -49,6 +49,9 @@ async def async_main():
     parser.add_argument(
         "--force-login", help="force login first", action="store_true", default=False
     )
+    parser.add_argument(
+        "--page", help="continue saving next page", action="store_true", default=False
+    )
     args = parser.parse_args()
     args.output_format = args.output_format or ["epub"]
     if "mobi" in args.output_format and "epub" not in args.output_format:
@@ -89,7 +92,7 @@ async def async_main():
                 continue
 
             try:
-                await exporter.export_markdown(args.load_timeout, args.load_interval)
+                await exporter.export_markdown(args.load_timeout, args.load_interval, is_page=args.page)
             except utils.LoadChapterFailedError:
                 logging.warning("Load chapter failed, close browser and retry")
                 await page.close()

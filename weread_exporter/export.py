@@ -300,7 +300,7 @@ class WeReadExporter(object):
         with open(self._cover_image_path, "wb") as fp:
             fp.write(data)
 
-    async def export_markdown(self, timeout=30, interval=10):
+    async def export_markdown(self, timeout=30, interval=10, is_page=False):
         if not os.path.isdir(self._chapter_dir):
             os.makedirs(self._chapter_dir)
         meta_data = await self._load_meta_data()
@@ -315,10 +315,14 @@ class WeReadExporter(object):
             )
 
             file_path = self._make_chapter_path(index, chapter["id"])
-            if os.path.isfile(file_path) and os.path.getsize(file_path) > 3:
+            check_path = self._make_chapter_path(index, chapter["id"])
+            if is_page:
+                # continue the page
+                check_path = self._make_chapter_path(index + 1, int(chapter["id"]) + 1)
+            if os.path.isfile(check_path) and os.path.getsize(check_path) > 3:
                 continue
             logging.info(
-                "[%s] File %s not exist" % (self.__class__.__name__, file_path)
+                "[%s] File %s not finished" % (self.__class__.__name__, file_path)
             )
 
             time0 = 0
@@ -355,7 +359,8 @@ class WeReadExporter(object):
                 "[%s] Export chapter %s to %s"
                 % (self.__class__.__name__, chapter["title"], file_path)
             )
-            with open(file_path, "wb") as fp:
+            mode = "ab" if is_page else "wb"
+            with open(file_path, mode) as fp:
                 fp.write(markdown.encode("utf-8", errors="replace"))
 
             wait_time = min_wait_time - (time.time() - time0)

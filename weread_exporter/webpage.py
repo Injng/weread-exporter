@@ -418,13 +418,12 @@ class WeReadWebPage(object):
                 "document.getElementsByClassName('readerFooter_button')[0].innerText;"
             )
             if result == "下一页":
-                logging.info("[%s] Go to next page" % self.__class__.__name__)
-                await self._page.evaluate(
-                    r"canvasContextHandler.data.markdown += '\n\n';"
-                )
+                logging.info(f"[{self.__class__.__name__}] Attempting to go to next page")
+                await self._page.evaluate(r"canvasContextHandler.data.markdown += '\n\n';")
                 await self.pre_load_page()
-                await self._page.click("button.readerFooter_button")
+                logging.info("[%s] Click next page" % self.__class__.__name__)
                 await asyncio.sleep(1)
+                break
             elif result == "下一章":
                 break
             elif result.startswith("登录"):
