@@ -421,7 +421,9 @@ class WeReadWebPage(object):
                 logging.info(f"[{self.__class__.__name__}] Attempting to go to next page")
                 await self._page.evaluate(r"canvasContextHandler.data.markdown += '\n\n';")
                 await self.pre_load_page()
+                print("\n\n\n\n")
                 logging.info("[%s] Click next page" % self.__class__.__name__)
+                print("\n\n\n\n")
                 await asyncio.sleep(1)
                 break
             elif result == "下一章":
